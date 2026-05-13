@@ -8,12 +8,30 @@ class CalculatorViewmodel extends ChangeNotifier {
 
   String expression = '';
   String result = '0';
-  bool isOnePlusOne = false;
+  bool isDarkMode = false;
   bool alreadyCalculated = false;
 
-  void addValue(String value) {
-    expression += value;
+  void toggleTheme() {
+    isDarkMode = !isDarkMode;
     notifyListeners();
+  }
+
+  void addValue(String value) {
+    if (alreadyCalculated && !['+', '-', '×', '÷', '%'].contains(value)) {
+      expression = value;
+      alreadyCalculated = false;
+    } else {
+      expression += value;
+      alreadyCalculated = false;
+    }
+    notifyListeners();
+  }
+
+  void backspace() {
+    if (expression.isNotEmpty) {
+      expression = expression.substring(0, expression.length - 1);
+      notifyListeners();
+    }
   }
 
   void clear() {
@@ -24,6 +42,8 @@ class CalculatorViewmodel extends ChangeNotifier {
   }
 
   void calculate() {
+    if (expression.isEmpty) return;
+    
     if (expression == '1+1' && alreadyCalculated) {
       result = 'Hello World';
       notifyListeners();
@@ -31,12 +51,7 @@ class CalculatorViewmodel extends ChangeNotifier {
     }
 
     result = calculateUsecase(expression);
-
-    if (expression == '1+1') {
-      alreadyCalculated = true;
-    } else {
-      alreadyCalculated = false;
-    }
+    alreadyCalculated = true;
     notifyListeners();
   }
 }
